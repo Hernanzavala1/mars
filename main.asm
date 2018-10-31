@@ -41,11 +41,11 @@ keyIndex_mcmsg: .asciiz "--x..x.--.x...xx..xx..-.x-.-.--xx"
 
 # FMCEncrypt
 FMCEncrypt_header: .asciiz "\n\n********* FMCEncrypt *********\n"
-FMCEncrypt_plaintext: .asciiz "GO SEAWOLVES!"
-FMCEncrypt_phrase: .asciiz "Computer Science is cool!"
+FMCEncrypt_plaintext: .asciiz "COMPUTER SCIENCE IS AWESOME!"
+FMCEncrypt_phrase: .asciiz "computer science is fun"
 FMCEncrypt_encryptBuffer: .space 100
 .align 2
-FMCEncrypt_size: .word 100
+FMCEncrypt_size: .word 20
 
 # FMCDecrypt
 FMCDecrypt_header: .asciiz "\n\n********* FMCDecrypt *********\n"

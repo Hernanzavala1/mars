@@ -8,7 +8,7 @@
 .macro clearRegister(%register)
 addi %register, %register, 0
 .end_macro
-
+ 
 
 .macro getLenghtOfString(%string)
 	move $t1, $zero
@@ -384,6 +384,9 @@ toMorse:
 			j loopMorse
 createKey:
 #Define your code here
+ 
+ 
+      
 	la $s6, ($ra)		#save main return address for next 
 	
 	add $s0, $a0, $0	#save input address before making it uppercase
@@ -492,6 +495,7 @@ FMCEncrypt:
 	############################################
 	clearAllTRegister
  	clearAllSRegister
+	
 	la $t1, ($a1)			#phrase for key
 	la $t2, ($a2)			#buffer
 	la $t3, ($a3)			#limit
@@ -511,7 +515,7 @@ FMCEncrypt:
 	jal toMorse			#plaintext to Morse	
 	
 	lw $t1, 0($sp)
-	la $a0, ($s7)
+	la $a0, ($t1)
 	la $a1, tempKey				
 	jal createKey			#createKey
 	
