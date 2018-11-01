@@ -10,24 +10,24 @@ str_return: .asciiz "Return: "
 
 # toUpper
 toUpper_header: .asciiz "\n\n********* toUpper *********\n"
-toUpper_CSisFun: .asciiz "Computer Science is fun."
+toUpper_CSisFun: .asciiz "#symbols & spaces!"
 
 # length2Char
 length2Char_header: .asciiz "\n\n********* length2Char *********\n"
-length2Char_char: .asciiz "S"
-length2Char_CSisFun: .asciiz "Computer Science is fun."
+length2Char_char: .asciiz "."
+length2Char_CSisFun: .asciiz "Looking for characters."
 
 # strcmp
 strcmp_header: .asciiz "\n\n********* strcmp *********\n"
-strcmp_str1: .asciiz "MIPS!!"
-strcmp_str2: .asciiz "MIPS - Millions.of.Instruction.Per...........Second"
+strcmp_str1: .asciiz "HI CSE220!"
+strcmp_str2: .asciiz ": Hi Cse220! Isn't MIPS Fun!"
 
 # toMorse
 toMorse_header: .asciiz "\n\n********* toMorse *********\n"
-toMorse_plaintext: .asciiz "MIPS!!"
-toMorse_mcmsg: .space 30
+toMorse_plaintext: .asciiz "ABC"
+toMorse_mcmsg: .asciiz "@@@@@@@@@@@@@@@@@@@@@@@@@"
 .align 2
-toMorse_size: .word 30
+toMorse_size: .word 24
 
 # createKey
 createKey_header: .asciiz "\n\n********* createKey *********\n"
@@ -165,7 +165,7 @@ main:
 
 	la $a0, strcmp_str1
 	la $a1, strcmp_str2
-	li $a2, 6
+	li $a2, 0
 	jal strcmp
 
 	move $t0, $v0
@@ -365,4 +365,4 @@ quit_main:
 # Student defined functions will be included starting here
 #################################################################
 
-.include "hw2.asm"
+.include "HernanZavalaYanesHW2.asm"
