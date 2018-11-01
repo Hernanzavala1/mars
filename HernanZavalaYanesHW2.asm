@@ -28,46 +28,41 @@
 	sw $s2, 4($sp)
 	sw $s3, 8($sp)
 	.end_macro 
-.macro clearAllTRegister
-move $t0, $zero
-move $t1, $zero
-move $t2, $zero
-move $t3, $zero
-move $t4, $zero
-move $t5, $zero
-move $t6, $zero
-.end_macro
+	.macro clearAllTRegister
+	move $t0, $zero
+	move $t1, $zero
+	move $t2, $zero
+	move $t3, $zero
+	move $t4, $zero
+	move $t5, $zero
+	move $t6, $zero
+	.end_macro
 
-.macro clearAllSRegister
-move $s0, $0 
-move $s1, $0
-move $s2, $0
-move $s3, $0
-move $s4, $0
-move $s5, $0
-move $s6, $0
-move $s7, $0
-.end_macro 
-.macro cleanStrcmpRegister
-move $s0, $zero
-move $s1, $zero
-move $s2, $zero
-move $t1, $zero
-move $t2, $zero
-move $t3, $zero
-move $t4, $zero
-move $t5, $zero
-.end_macro 
-jumpToRegisterS4:
-jr $s4 
-jumpToRegisterS6:
+	.macro clearAllSRegister
+	move $s0, $0 
+	move $s1, $0
+	move $s2, $0
+	move $s3, $0
+	move $s4, $0
+	move $s5, $0
+	move $s6, $0
+	move $s7, $0
+	.end_macro 
+	.macro cleanStrcmpRegister
+	move $s0, $zero
+	move $s1, $zero
+	move $s2, $zero
+	move $t1, $zero
+	move $t2, $zero
+	move $t3, $zero
+	move $t4, $zero
+	move $t5, $zero
+	.end_macro 
+	
+	jumpToRegisterS6:
  			
 			jr $s6
-jumpToRegister:
- 	
-	
-	jr $ra
-	
+		
 
 ##############################
 # PART 1 FUNCTIONS 
@@ -397,13 +392,15 @@ toMorse:
 		returnZeros:
 			move $v0, $0
 			move $v1, $0
-				lw $s0, 0($sp)
-		lw $s1, 4($sp)
-		lw $s2, 8($sp)
-		lw $s3, 12($sp)
-		lw $s4, 16($sp)
-		lw $s5, 20($sp)
-		addi $sp, $sp, 24
+			#restore the stack
+			lw $s0, 0($sp)
+			lw $s1, 4($sp)
+			lw $s2, 8($sp)
+			lw $s3, 12($sp)
+			lw $s4, 16($sp)
+			lw $s5, 20($sp)
+			addi $sp, $sp, 24
+			
 			jr $ra
 		
 		printSpace:
@@ -414,8 +411,9 @@ toMorse:
 			j loopMorse
 createKey:
 #Define your code here
- 
-	la $s6, ($ra)		#save main return address for next 
+ 	addi $sp, $sp, -4
+ 	sw $ra, 0($sp)
+	
 	
 	add $s0, $a0, $0	#save input address before making it uppercase
 	jal toUpper
@@ -431,8 +429,10 @@ createKey:
 	la $s5, loopForCopyingWithoutRepetition			#load address of method
 	jalr $s4, $s5 						# jump to method and save return address
 		
-	sb $0, 0($a1)						#make the last in result as null
-	la $ra, ($s6)
+	sb $0, 0($a1)	
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4					#make the last in result as null
+	
 	clearAllTRegister
  	clearAllSRegister
   	jr $ra
@@ -442,7 +442,7 @@ createKey:
    
 	lb $s0, ($a0)			#load byte from input
 	addi $a0, $a0, 1		#increase input address by one
-	beq $s0, $0, jumpToRegisterS4	#stop funcrion if null is reached
+	beq $s0, $0, jumpS4	#stop funcrion if null is reached
 	
 	bltu $s0, 65, loopForCopyingWithoutRepetition		# check if character is in a range
 	bgtu $s0, 90, loopForCopyingWithoutRepetition 		# check if character is in a range
@@ -453,15 +453,18 @@ createKey:
 	addi $a1, $a1, 1					#increase address for saving in result
 	j loopForCopyingWithoutRepetition
 		
-		
+		jumpS4:
+		jr $s4
 		checkIfExist:
 			lb $s1, ($t1)
 			addi $t1, $t1, 1
-			beq $s1, $0, jumpToRegister
+			beq $s1, $0, jumpRA
 			seq $s2, $s1, $s0
 			beq $s2, 0, checkIfExist
-			j jumpToRegister
-
+			j jumpRA
+			
+			jumpRA:
+			jr $ra
 keyIndex:
 		#Define your code here
 	addi $sp, $sp ,-4
