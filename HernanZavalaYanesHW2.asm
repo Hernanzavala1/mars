@@ -22,12 +22,7 @@
  		
 
 .end_macro 
-.macro saveSRegisterToStack
-	addi $sp, $sp, -12
-	sw $s0, 0($sp)
-	sw $s2, 4($sp)
-	sw $s3, 8($sp)
-	.end_macro 
+
 	.macro clearAllTRegister
 	move $t0, $zero
 	move $t1, $zero
@@ -59,9 +54,7 @@
 	move $t5, $zero
 	.end_macro 
 	
-	jumpToRegisterS6:
- 			
-			jr $s6
+	
 		
 
 ##############################
@@ -74,8 +67,7 @@ toUpper:
 	# DELETE THIS CODE. Only here to allow main program to run without fully implementing the function
 	
 	
-	#addi $sp, $sp, -4
-	#sw $a0, 0($sp)
+
 	
 	la $s0, ($a0)
 	li $t3, 32  #will be used to convert to upper
@@ -91,9 +83,7 @@ toUpper:
 	
 		j Upperloop
  	done: 
- 		#print a0 to see what value it has at this point
- 		#lw $a0, 0($sp)
- 		#addi $sp, $sp, 4
+ 		
  		move $v0, $s0
  		clearAllTRegister
  		
@@ -137,6 +127,7 @@ toUpper:
 
 
 strcmp:
+	#save to the stack
 	addi $sp, $sp, -12
 	sw $s0, 0($sp)
 	sw $s1, 4($sp)
@@ -152,28 +143,29 @@ strcmp:
 	#test if lenght arguement is valid
 	
 	bltz  $s2, returnZero
-	beqz  $s2, GoThroughString
-	bgt $s2, $s0, returnZero
+	beqz  $s2, DoEntireString
+	bgt $s2, $s0, returnZero #check if the lenght arguement is greater then the lenght of the first or second string
 	bgt $s2, $s1, returnZero
 	
 	# if this point is reached then it is because lenght is less than the lenght of both strings and it is not negative
 	li $t1, 0 #counter of the loop
-	li $t2, 0 #number of characters that are the same
+	li $t2, 0 #counter for equal characters
 	
 	lenghtBasedLoop:
-	beq $t1, $s2, doneStrcmp2
+		beq $t1, $s2, doneStrcmp
                 lb      $t3,($a0)                   # get next char from str1
   	  	lb      $t4,($a1)                   # get next char from str2
   	  	addi    $a0,$a0,1                   # increase address
-  	 	addi    $a1,$a1,1                   # increase addres
+  	 	addi    $a1,$a1,1                   # increase address
+  	 	
   	 	addi $t1, $t1, 1 #increment the counter
   	 	
-  	 	bne $t3, $t4, lenghtBasedLoop
-  	 	addi $t2, $t2, 1
-  	 	j lenghtBasedLoop
+  	 	bne $t3, $t4, lenghtBasedLoop #if the 2 characters are not the same continue will following characters
+  	 	addi $t2, $t2, 1 # otherwise increment the counter for equal characters
+  	 	j lenghtBasedLoop # continue the loop until the counter reaches the lenght arguement
   	 	
-  	 	GoThroughString:
-  	 	
+  	 	DoEntireString:
+
   	 	addi $t1, $zero, 0 #counter for same characters in both strings
   	 	
   	 	InsideLoop: 
@@ -185,48 +177,44 @@ strcmp:
   	 	addi $a0, $a0, 1
   	 	addi $a1, $a1, 1
   	 	
-  	 	beq $t2, $0, doneSTRCMP
-  	 	beq $t3, $0, doneSTRCMP
-  	 	bne $t3, $t2, InsideLoop
-  	 	addi $t1, $t1, 1
-  	 	j InsideLoop
+  	 	beq $t2, $0, Finished1 #if either character is a 0 it ends the loop
+  	 	beq $t3, $0, Finished1
+  	 	bne $t3, $t2, InsideLoop # if the two characters are not the same then continue the loop
+  	 	addi $t1, $t1, 1 #otherwise increment the number of equal characters counter
+  	 	j InsideLoop #continue the loop until a 0 is reached
   	 	
-  	 	doneSTRCMP:
-  	 	beq $s0, $s1, checkCharacters #if both strings have the same lenght check if all their characters were equal
+  	 	Finished1:
+  	 	beq $s0, $s1, checkIfSame #if both strings have the same lenght check if all their characters were equal
 		
-			checkCharacters:
-				beq $s1, $t1 updateReturnValue
-					j return
-					updateReturnValue: 
-					addi $t4, $t4, 1
-					j return
+		checkIfSame:
+		beq $s1, $t1 changeSameCharValue #if the lenght of either string is equal to the counter of same characters then change retun value
+		j return
+		changeSameCharValue: 
+		addi $t4, $t4, 1
+		j return
 			
 		return:	
+		#restore the stack
 		lw $s0, 0($sp)
 		lw $s1, 4($sp)
 		lw $s2, 8($sp)
 		addi $sp, $sp, 12
-  	 			
+  	 		
+  	 	#move the results to return registers			
 		move $v0, $t1	
 		move $v1, $t4
 		cleanStrcmpRegister
 		jr $ra
 
-  	 	
-  	
-  	 	
-  	 	
-  	 	
-  	 	
-  	 	
-  	 	doneStrcmp2:
+  	 	doneStrcmp:
+  	 	#restore the stack
   	 	lw $s0, 0($sp)
 		lw $s1, 4($sp)
 		lw $s2, 8($sp)
 		addi $sp, $sp, 12
 	
 		
-		seq $t5, $t2, $a2
+		seq $t5, $t2, $a2#check if the number of characters matched equal the lenght passed in
 		
 		move $v0, $t2
 		move $v1, $t5
@@ -234,6 +222,7 @@ strcmp:
 		jr $ra
   	 	
   	 	 returnZero:
+  	 	 #restore the stack
   	 	 lw $s0, 0($sp)
 		lw $s1, 4($sp)
 		lw $s2, 8($sp)
@@ -271,35 +260,31 @@ toMorse:
 	la $s2, ($a1)   #load address of ToMorse_mcmsg($s3)
 	la $s3, ($a2)   # this will be the limit for the amount of space allocated 
 	move $t0, $0		# t0 will be the counter which will be used to check if there is still space left
-	 
-	
 
-
-	
-	lb $s1, ($s0)
-	beq $s1, $zero, doneNull
-	loopMorse:
-		lb $s1, ($s0)		#load char from address    s1 - char from plainText 	t4 -address of plaintext
-		addi $s0, $s0, 1 	#increase address of plain text
-		beq $t0, $s3, doneToMorseNoMoreSpace
-		beq $s1, $zero, doneToMorse
-		bgt $s1, 90, loopMorse
-		blt $s1, 32, loopMorse
-		beq $s1, 32, printSpace		#print Space if s1 = space
+		lb $s1, ($s0)
+		beq $s1, $zero, doneNull
+		loopMorse:
+			lb $s1, ($s0)		#load char from address    s1 - char from plainText 	t4 -address of plaintext
+			addi $s0, $s0, 1 	#increase address of plain text
+			beq $t0, $s3, doneToMorseNoMoreSpace
+			beq $s1, $zero, doneToMorse
+			bgt $s1, 90, loopMorse
+			blt $s1, 32, loopMorse
+			beq $s1, 32, printSpace		#print Space if s1 = space
 			
-		addi $s1, $s1, -33	
+			addi $s1, $s1, -33	
 		
-		la $t5, MorseCode	
-		addi $t6, $s1, 0     #t6 index of MorseCode
-		add $t6, $t6, $t6    # double the index
-		add $t6, $t6, $t6    # double the index
-   		add $t7, $t6, $t5    #combine indexies	
-		lw $t8, 0($t7)	     #get value from morce code array
+			la $t5, MorseCode	
+			addi $t6, $s1, 0     #t6 index of MorseCode
+			add $t6, $t6, $t6    # double the index
+			add $t6, $t6, $t6    # double the index
+   			add $t7, $t6, $t5    #combine indexies	
+			lw $t8, 0($t7)	     #get value from morce code array
 		
 		
-		getLenghtOfString($t8)		#count length of morse equivalent
-		move $s6, $v0			# length of morse equivalent
-		move $s5, $zero			# counter for a loop converting char to morse equivalent
+			getLenghtOfString($t8)		#count length of morse equivalent
+			move $s6, $v0			# length of morse equivalent
+			move $s5, $zero			# counter for a loop converting char to morse equivalent
 		
 		loopCharToMorse:
 			
@@ -338,13 +323,13 @@ toMorse:
  			clearAllSRegister
  			
 		
-		lw $s0, 0($sp)
-		lw $s1, 4($sp)
-		lw $s2, 8($sp)
-		lw $s3, 12($sp)
-		lw $s4, 16($sp)
-		lw $s5, 20($sp)
-		addi $sp, $sp, 24
+			lw $s0, 0($sp)
+			lw $s1, 4($sp)
+			lw $s2, 8($sp)
+			lw $s3, 12($sp)
+			lw $s4, 16($sp)
+			lw $s5, 20($sp)
+			addi $sp, $sp, 24
 		
 					
 			jr $ra
@@ -360,13 +345,13 @@ toMorse:
  			clearAllSRegister
  			
 					
-					lw $s0, 0($sp)
-					lw $s1, 4($sp)
-					lw $s2, 8($sp)
-					lw $s3, 12($sp)
-					lw $s4, 16($sp)
-					lw $s5, 20($sp)
-					addi $sp, $sp, 24
+			lw $s0, 0($sp)
+			lw $s1, 4($sp)
+			lw $s2, 8($sp)
+			lw $s3, 12($sp)
+			lw $s4, 16($sp)
+			lw $s5, 20($sp)
+			addi $sp, $sp, 24
 			jr $ra	
 			
 		doneToMorseNoMoreSpace:
@@ -380,13 +365,13 @@ toMorse:
  			clearAllSRegister
  			
 		
-				lw $s0, 0($sp)
-		lw $s1, 4($sp)
-		lw $s2, 8($sp)
-		lw $s3, 12($sp)
-		lw $s4, 16($sp)
-		lw $s5, 20($sp)
-		addi $sp, $sp, 24
+			lw $s0, 0($sp)
+			lw $s1, 4($sp)
+			lw $s2, 8($sp)
+			lw $s3, 12($sp)
+			lw $s4, 16($sp)
+			lw $s5, 20($sp)
+			addi $sp, $sp, 24
 								
 			jr $ra	
 		returnZeros:
@@ -411,194 +396,222 @@ toMorse:
 			j loopMorse
 createKey:
 #Define your code here
- 	addi $sp, $sp, -4
- 	sw $ra, 0($sp)
+			#store to the stack
+ 			addi $sp, $sp, -24
+ 			sw $ra, 0($sp)
+ 			sw $s0, 4($sp)
+			sw $s1, 8($sp)
+			sw $s2, 12($sp)
+			sw $s4, 16($sp)
+			sw $s5, 20($sp)
 	
+			move $s0, $a0	#save first arguement to $s0
 	
-	add $s0, $a0, $0	#save input address before making it uppercase
-	jal toUpper
-	move $a0, $s0			#a0 - input address after uppercase method
+			jal toUpper #jump to make it all upper case
+			move $a0, $s0			#get the original value of $a0 from $s0 after toUpper call
+			move $t0, $a1 # move $a1, to $t0 register
+			la $s5, CopyLoop			#load address of method
+			jalr $s4, $s5 						# jump to method which the address is saved above
 	
-	
-	add $t0, $a1, $0		#t0 - result address, will not be changed
-	
-	la $s5, loopForCopyingWithoutRepetition			#load address of method
-	jalr $s4, $s5 						# jump to method and save return address
-	
-	la $a0, alphabet					#load address of alphabet to a0, will be used is follow method as input string
-	la $s5, loopForCopyingWithoutRepetition			#load address of method
-	jalr $s4, $s5 						# jump to method and save return address
+			la $a0, alphabet					#load address of alphabet to a0
+			la $s5, CopyLoop			#load address of method
+			jalr $s4, $s5 						# jump to method 
 		
-	sb $0, 0($a1)	
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4					#make the last in result as null
+			sb $0, 0($a1)	
+			lw $ra, 0($sp)
+			lw $s0, 4($sp)
+			lw $s1, 8($sp)
+			lw $s2, 12($sp)
+			lw $s4, 16($sp)
+			lw $s5, 20($sp)
+			addi $sp, $sp, 24					#make the last in result as null
 	
-	clearAllTRegister
- 	clearAllSRegister
-  	jr $ra
+			clearAllTRegister
+ 			clearAllSRegister
+  			jr $ra
    
-    	loopForCopyingWithoutRepetition:
-   	add $t1, $t0, $0		#address of the result string, used for checking existing char
-   
-	lb $s0, ($a0)			#load byte from input
-	addi $a0, $a0, 1		#increase input address by one
-	beq $s0, $0, jumpS4	#stop funcrion if null is reached
+    			CopyLoop:  
+   	
+   			move $t1, $t0 #move $a1 to $t1
+			lb $s0, ($a0)			#load first charater from the input
+			addi $a0, $a0, 1		#increment the address of the string passed in
+			beq $s0, $0, jumpS4	#if the character loaded is a null(0) jump register $s4 to go back to the above code
+	 
 	
-	bltu $s0, 65, loopForCopyingWithoutRepetition		# check if character is in a range
-	bgtu $s0, 90, loopForCopyingWithoutRepetition 		# check if character is in a range
+			bltu $s0, 65, CopyLoop		# following 2 lines checks if its a letter in the alphabet and upper case
+			bgtu $s0, 90, CopyLoop 		
 	
-	jal checkIfExist					#check if in result exist the same letter
-	beq $s2, 1, loopForCopyingWithoutRepetition		#if in result exist the same letter, go to loop
-	sb $s0, ($a1)						#add to result
-	addi $a1, $a1, 1					#increase address for saving in result
-	j loopForCopyingWithoutRepetition
+			jal AlreadyCopy		#check if in result exist the same letter
+			beq $s2, 1, CopyLoop		#if both characters are the same then it continues with the loop
+			sb $s0, ($a1)						#if this is reached it is because the characters were not the same and need to be stored in key
+			addi $a1, $a1, 1					#increase address of the key
+			j CopyLoop
 		
-		jumpS4:
-		jr $s4
-		checkIfExist:
-			lb $s1, ($t1)
-			addi $t1, $t1, 1
-			beq $s1, $0, jumpRA
-			seq $s2, $s1, $s0
-			beq $s2, 0, checkIfExist
-			j jumpRA
+			jumpS4: # this jumps resgister $s4 to go back to the main code in create key
+			jr $s4
+		
+			AlreadyCopy:
+
+			lb $s1, ($t1) # loads a character from the key that is passed in $a1
+			addi $t1, $t1, 1 #increments the address of the key
+			beq $s1, $0, jumpRA # if the character that is loaded is a 0 it goes back to the previous loop.
+			seq $s2, $s1, $s0 # it checks if both the characters are the same
+			beq $s2, 0, AlreadyCopy #if they are not equal then continue to check the rest of the key
+			j jumpRA #if they are the same go back to previous loop
 			
-			jumpRA:
+			jumpRA: # it goes back to the previous loop
 			jr $ra
 keyIndex:
 		#Define your code here
-	addi $sp, $sp ,-4
-	sw $ra, 0($sp)
+		# save registers to the stack
+			addi $sp, $sp ,-20
+			sw $ra, 0($sp)
+			sw $s3, 4($sp)
+			sw $s4, 8($sp)
+			sw $s5, 12($sp)
+			sw $s6, 16($sp)
 	
-	la $a1, FMorseCipherArray
-	addi $a2, $0, 3
-	la $s3 ($a0)
-	move $s4, $0 			#counter for a loop	(s0)
-	move $s5, $0			#counter for offset from beggining (s1)
+			la $a1, FMorseCipherArray #load the address of the array into $a1 which is one of the strings that will be compared to the $a0
+			addi $a2, $0, 3 # set the the lenght for strcmp to 3 in $a2
+			la $s3 ($a0)   # save the original arguement @a0
+	
+			move $s4, $0 			#counter for the loop below 
+			move $s5, $0			#offset for the morsecipherArray
 	  
 	 
-	la $t6, loopfForKeyIndex
-				#load address of method
-	jalr $s6, $t6 				 	
-	move $v0, $s4	
+			la $t6, IndexKeyLoop # load the address of the method to $t6 
+				
+			jalr $s6, $t6 	# jump to the above method
+				 	
+			move $v0, $s4 # move the result into return register $v0	
 	
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4
+			#restore the stack
+			lw $ra, 0($sp)
+			lw $s3, 4($sp)
+			lw $s4, 8($sp)
+			lw $s5, 12($sp)
+			lw $s6, 16($sp)
+			addi $sp, $sp, 20
 	
-	clearAllTRegister
- 	clearAllSRegister
-	jr $ra
+	 		#clean all registers 
+			clearAllTRegister
+ 			clearAllSRegister
+			jr $ra
 	
-	loopfForKeyIndex:
-	                
-	                #sw $s0, 4($sp)
-	                #sw $s1, 8($sp) 
-	               # sw $s4, 12($sp)
+			IndexKeyLoop:
 			
-			bgt $s4, 25, keyIndexNotFound # $s0 will never reach 25 since it is ecoming 0 every time
+			bgt $s4, 25, NotFoundIndex # index was not be able to found
 			
-			add $a0, $0, $s3 # here is the problem after the first loop it will become a zero 
+			add $a0, $0, $s3 # reload the original $a0 
 			la $a1, FMorseCipherArray
-			add $a1, $a1, $s5
+			add $a1, $a1, $s5 # set $a1, to morsecipher arry with an offset of multiple of 3
 			
-			jal strcmp
-			beq $v1, $1, jumpToRegisterS6
+			jal strcmp # jump to strcmp 
+			beq $v1, $at, jumpS6 
 		
 	                
-			addi $s4, $s4, 1
-			addi $s5, $s5, 3
-			j loopfForKeyIndex
-	keyIndexNotFound: 
+			addi $s4, $s4, 1 #increment the loop counter
+			addi $s5, $s5, 3 #increment the offset by 3
+			j IndexKeyLoop
+			
+			jumpS6:# return to the main code up in the key index (line 494)
+			jr $s6
+			NotFoundIndex: 
 	
-	addi $v0, $zero, -1
-	lw $ra, 0($sp)
-	addi $sp, $sp, 4
+			addi $v0, $zero, -1 # the index was not found so return a negative 1
+			#restore the stack
+			lw $ra, 0($sp)
+			lw $s3, 4($sp)
+			lw $s4, 8($sp)
+			lw $s5, 12($sp)
+			lw $s6, 16($sp)
+			addi $sp, $sp, 20
 	
-	clearAllTRegister
- 	clearAllSRegister
+			clearAllTRegister
+ 			clearAllSRegister
 	
-	jr $ra	
+			jr $ra	
 
 FMCEncrypt:
 	#Define your code here
 	############################################
-	clearAllTRegister
- 	clearAllSRegister
+			la $t1, ($a1)			#phrase 
+			la $t2, ($a2)			#buffer
+			la $t3, ($a3)			# number of bytes that will be available in the buffer 
 	
-	la $t1, ($a1)			#phrase for key
-	la $t2, ($a2)			#buffer
-	la $t3, ($a3)			#limit
-	addi $t3, $t3, -1
-	addi $sp, $sp, -20		#stack
-	sw $t1, 0($sp)			#store for key
-	add $s7, $0, $t1		
-	sw $t2, 4($sp)			#	
-	sw $t3, 8($sp)			#
+			addi $t3, $t3, -1
+			add $s7, $0, $t1		
 	
-	la $s5, ($ra)			#save RA for future
-	sw $s5, 12($sp)			#save RA	
+			#save to the stack
+			addi $sp, $sp, -20
+			sw $t1, 0($sp)	
+			sw $t2, 4($sp)			
+			sw $t3, 8($sp)
+			sw $ra, 12($sp)		
+			sw $t2, 16($sp)			
 	
-	sw $t2, 16($sp)			#store buffer, no change to it
-	la $a1, tempMorse		
-	addi $a2, $0, 100
-	jal toMorse			#plaintext to Morse	
-	
-	lw $t1, 0($sp)
-	la $a0, ($t1)
-	la $a1, tempKey				
-	jal createKey			#createKey
-	
-	
-	
-	la $a0, tempMorse
-	sw $a0, 0($sp)
-	la $a1, tempKey
-	
-		loopEncrypt:
-		lw $t3, 8($sp)
-		beq $t3, $0, goNext
-		lw $a0, ($sp)
-		la $a0, ($a0)
-		
-		jal keyIndex
-		
-		lw $a0, 0($sp)
-		addi $a0, $a0, 3
-		sw $a0, 0($sp)
-		
-		bge $v0, $0, addToResult
-					
-		j goNext
-	goNext:
-	#addi $v1, $0, 1
-	lw $t3, 8($sp)
-	sne $v1, $t3, $0
-	lw $t2, 0($sp)		#	make result null terminated
-	sb $0 ($t2)		#
-	
-	lw $t2, 16($sp)		#address of buffer			
-	la $v0, ($t2)		#for output
-	#addi $v1, $0, 1		
-	
-	lw $s5, 12($sp)	
-	addi $sp, $sp, 20
-	la $ra, ($s5)
-	jr $ra
 
-		addToResult:
+
+			la $a1, tempMorse	#load the address of allocated space
+			addi $a2, $0, 100 #this is the size allocated 
+			jal toMorse			#jump to toMorse code method above and convert the text to morse	
+	
+			lw $t1, 0($sp) # reload the phrase so it can be passed to the create key method
+			la $a0, ($t1)
+			la $a1, tempKey	# pass the memory address for the result space			
+			jal createKey			#create a key with the 
+
+			la $a0, tempMorse 
+			sw $a0, 0($sp)
 			la $a1, tempKey
-			add $a1, $a1, $v0		#v0 - offset
+	
+			EncryptPhrase:
+			lw $t3, 8($sp) #;load the number of bytes in the buffer
+			beq $t3, $0, NextMethod # if the number is equal to 0 then jump to NextMethod
+			
+			lw $t1, ($sp) # reload the phrase arguement and load it to $a0 to get keyIndex
+			la $a0, ($t1)
+		
+			jal keyIndex
+		
+			lw $a0, 0($sp)
+			addi $a0, $a0, 3
+			sw $a0, 0($sp)
+		
+			bge $v0, $0, includeMethod
+					
+			j NextMethod
+			
+			NextMethod:
+	
+			lw $t3, 8($sp)
+			sne $v1, $t3, $0
+			lw $t2, 0($sp)		
+			sb $0 ($t2)		#add a zero to the end to make it null terminated
+	
+			lw $t2, 16($sp)		#address of buffer			
+			la $v0, ($t2)		#load $t2 into return register
+			
+			#restore the stack
+			lw $ra, 12($sp)	
+			addi $sp, $sp, 20
+	
+			jr $ra
+
+			includeMethod:#this method adds characters to the result string
+			la $a1, tempKey
+			add $a1, $a1, $v0		
 			lb $t9 ($a1)
 			
 			lw $t2, 4($sp)
-			sb $t9 ($t2)		#t2 - result	
-			addi $t2, $t2,1
+			sb $t9 ($t2)		
+			addi $t2, $t2,1  #it includes the $t9 in the result $t2
 			sw $t2, 4($sp)
 			
 			lw $t3, 8($sp)
-			addi $t3, $t3, -1	#	decrease loop counter	
+			addi $t3, $t3, -1	#decrements the counter fo the loop
 			sw $t3, 8($sp)
-			j loopEncrypt
+			j EncryptPhrase
 
 ##############################
 # EXTRA CREDIT FUNCTIONS
@@ -683,7 +696,7 @@ MorseW: .asciiz ".--"
 MorseX: .asciiz "-..-"
 MorseY: .asciiz "-.--"
 MorseZ: .asciiz "--.."
-test: .asciiz  "hello"
+
 
 
 FMorseCipherArray: .asciiz ".....-..x.-..--.-x.x..x-.xx-..-.--.x--.-----x-x.-x--xxx..x.-x.xx-.x--x-xxx.xx-"
