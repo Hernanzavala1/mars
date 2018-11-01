@@ -10,42 +10,42 @@ str_return: .asciiz "Return: "
 
 # toUpper
 toUpper_header: .asciiz "\n\n********* toUpper *********\n"
-toUpper_CSisFun: .asciiz "#symbols & spaces!"
+toUpper_CSisFun: .asciiz "Computer Science is fun."
 
 # length2Char
 length2Char_header: .asciiz "\n\n********* length2Char *********\n"
-length2Char_char: .asciiz "."
-length2Char_CSisFun: .asciiz "Looking for characters."
+length2Char_char: .asciiz "S"
+length2Char_CSisFun: .asciiz "Computer Science is fun."
 
 # strcmp
 strcmp_header: .asciiz "\n\n********* strcmp *********\n"
-strcmp_str1: .asciiz "HI CSE220!"
-strcmp_str2: .asciiz ": Hi Cse220! Isn't MIPS Fun!"
+strcmp_str1: .asciiz "MIPS!!"
+strcmp_str2: .asciiz "MIPS - Millions.of.Instruction.Per...Second"
 
 # toMorse
 toMorse_header: .asciiz "\n\n********* toMorse *********\n"
-toMorse_plaintext: .asciiz "ABC"
+toMorse_plaintext: .asciiz "ABCdE"
 toMorse_mcmsg: .asciiz "@@@@@@@@@@@@@@@@@@@@@@@@@"
 .align 2
-toMorse_size: .word 24
+toMorse_size: .word -10
 
 # createKey
 createKey_header: .asciiz "\n\n********* createKey *********\n"
-createKey_phrase: .asciiz "Computer Science is fun."
-createKey_key: .space 26
+createKey_phrase: .asciiz "Computer_Science!Is^Fun!!!"
+createKey_key: .asciiz "@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 			   .byte 0
 
 # keyIndex
 keyIndex_header: .asciiz "\n\n********* keyIndex *********\n"
-keyIndex_mcmsg: .asciiz "--x..x.--.x...xx..xx..-.x-.-.--xx"
+keyIndex_mcmsg: .asciiz "-x----.....x"
 
 # FMCEncrypt
 FMCEncrypt_header: .asciiz "\n\n********* FMCEncrypt *********\n"
-FMCEncrypt_plaintext: .asciiz "COMPUTER SCIENCE IS AWESOME!"
-FMCEncrypt_phrase: .asciiz "computer science is fun"
+FMCEncrypt_plaintext: .asciiz "GO SEAWOLVES!"
+FMCEncrypt_phrase: .asciiz "Computer Science is cool!"
 FMCEncrypt_encryptBuffer: .space 100
 .align 2
-FMCEncrypt_size: .word 20
+FMCEncrypt_size: .word 100
 
 # FMCDecrypt
 FMCDecrypt_header: .asciiz "\n\n********* FMCDecrypt *********\n"
@@ -159,13 +159,13 @@ main:
 	print_string(strcmp_str2)
 	print_newline
 	print_string(str_input)
-	li $t1, 6
+	li $t1, 4
 	print_int($t1)
 	print_newline
 
 	la $a0, strcmp_str1
 	la $a1, strcmp_str2
-	li $a2, 0
+	li $a2, 6
 	jal strcmp
 
 	move $t0, $v0
@@ -182,7 +182,7 @@ main:
 	############################################
 	# TEST CASE for toMorse
 	############################################
-print_string(toMorse_header)
+	print_string(toMorse_header)
 	print_string(str_input)
 	print_string(toMorse_plaintext)
 	print_newline
@@ -213,6 +213,7 @@ print_string(toMorse_header)
 	print_string(str_return)
 	print_int($t1)
 	print_newline
+
 	############################################
 	# TEST CASE for createKey
 	############################################
@@ -365,4 +366,4 @@ quit_main:
 # Student defined functions will be included starting here
 #################################################################
 
-.include "hw2.asm"
+.include "HernanZavalaYanesHW2.asm"

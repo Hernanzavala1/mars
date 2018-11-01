@@ -254,6 +254,15 @@ strcmp:
 ##############################
 
 toMorse:
+	addi $sp, $sp, -24
+	sw $s0, 0($sp)
+	sw $s1, 4($sp)
+	sw $s2, 8($sp)
+	sw $s3, 12($sp)
+	sw $s4, 16($sp)
+	sw $s5, 20($sp)
+	
+ 
 	blt $a2, 1, returnZeros # if the lenght that is entered is less than 1 it will return 0, 0
 	addi $a2, $a2, -1	#otherwise decrease it by 1 because of the null character
 	
@@ -262,7 +271,7 @@ toMorse:
 	la $s3, ($a2)   # this will be the limit for the amount of space allocated 
 	move $t0, $0		# t0 will be the counter which will be used to check if there is still space left
 	 
-	saveSRegisterToStack
+	#saveSRegisterToStack
 
 
 	
@@ -327,10 +336,18 @@ toMorse:
 			clearAllTRegister
  			clearAllSRegister
  			
-			addi $sp, $sp, 12
-			lw $s0, 0($sp)
-			lw $s2, 4($sp)
-			lw $s3, 8($sp)
+			#addi $sp, $sp, 12
+			#lw $s0, 0($sp)
+			#lw $s2, 4($sp)
+			#lw $s3, 8($sp)
+			
+		lw $s0, 0($sp)
+		lw $s1, 4($sp)
+		lw $s2, 8($sp)
+		lw $s3, 12($sp)
+		lw $s4, 16($sp)
+		lw $s5, 20($sp)
+		addi $sp, $sp, 24
 		
 					
 			jr $ra
@@ -345,11 +362,17 @@ toMorse:
 			clearAllTRegister
  			clearAllSRegister
  			
-			addi $sp, $sp, 12
-			lw $s0, 0($sp)
-			lw $s2, 4($sp)
-			lw $s3, 8($sp)		
-				
+			#addi $sp, $sp, 12
+			#lw $s0, 0($sp)
+			#lw $s2, 4($sp)
+			#lw $s3, 8($sp)		
+					lw $s0, 0($sp)
+					lw $s1, 4($sp)
+					lw $s2, 8($sp)
+					lw $s3, 12($sp)
+					lw $s4, 16($sp)
+					lw $s5, 20($sp)
+					addi $sp, $sp, 24
 			jr $ra	
 			
 		doneToMorseNoMoreSpace:
@@ -363,16 +386,29 @@ toMorse:
  			clearAllSRegister
  			
 			
-			addi $sp, $sp, 12
-			lw $s0, 0($sp)
-			lw $s2, 4($sp)
-			lw $s3, 8($sp)
+			#addi $sp, $sp, 12
+			#lw $s0, 0($sp)
+			#lw $s2, 4($sp)
+			#lw $s3, 8($sp)
+				lw $s0, 0($sp)
+		lw $s1, 4($sp)
+		lw $s2, 8($sp)
+		lw $s3, 12($sp)
+		lw $s4, 16($sp)
+		lw $s5, 20($sp)
+		addi $sp, $sp, 24
 								
 			jr $ra	
 		returnZeros:
 			move $v0, $0
 			move $v1, $0
-			
+				lw $s0, 0($sp)
+		lw $s1, 4($sp)
+		lw $s2, 8($sp)
+		lw $s3, 12($sp)
+		lw $s4, 16($sp)
+		lw $s5, 20($sp)
+		addi $sp, $sp, 24
 			jr $ra
 		
 		printSpace:
