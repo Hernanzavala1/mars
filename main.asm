@@ -365,4 +365,4 @@ quit_main:
 # Student defined functions will be included starting here
 #################################################################
 
-.include "HernanZavalaYanesHW2.asm"
+.include "hw2.asm"

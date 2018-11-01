@@ -1,14 +1,10 @@
 #############################################################
 # Homework #2
-# name: MY_NAME
-# sbuid: MY_SBU_ID
+# name: Hernan J Zavala Yanes
+# sccc id:01167391
 ##############################################################
 .text
 
-.macro clearRegister(%register)
-addi %register, %register, 0
-.end_macro
- 
 
 .macro getLenghtOfString(%string)
 	move $t1, $zero
@@ -144,10 +140,11 @@ toUpper:
 
 
 strcmp:
-	#Define your code here
-	#addi $sp, $sp, -8
-	#sw $ra,0($sp)
-	#sw $a2, 4($sp) #save the lenght arguement
+	addi $sp, $sp, -12
+	sw $s0, 0($sp)
+	sw $s1, 4($sp)
+	sw $s2 8($sp)
+	
 	
 	getLenghtOfString($a0) #get lenght of first string
 	move $s0, $v0
@@ -204,9 +201,10 @@ strcmp:
 					j return
 			
 		return:	
-		#lw $ra, 0($sp)
-  	 	#lw $a2, 4($sp)
-  	 	#addi $sp, $sp, 8
+		lw $s0, 0($sp)
+		lw $s1, 4($sp)
+		lw $s2, 8($sp)
+		addi $sp, $sp, 12
   	 			
 		move $v0, $t1	
 		move $v1, $t4
@@ -221,9 +219,10 @@ strcmp:
   	 	
   	 	
   	 	doneStrcmp2:
-  	 	#lw $ra, 0($sp)
-  	 	#lw $a2, 4($sp)
-  	 	#addi $sp, $sp, 8
+  	 	lw $s0, 0($sp)
+		lw $s1, 4($sp)
+		lw $s2, 8($sp)
+		addi $sp, $sp, 12
 	
 		
 		seq $t5, $t2, $a2
@@ -234,10 +233,10 @@ strcmp:
 		jr $ra
   	 	
   	 	 returnZero:
-  	 	 #restore the stack
- 		# lw $ra, 0($sp)
-  	 	# lw $a2, 4($sp)
-  	 	#addi $sp, $sp, 8
+  	 	 lw $s0, 0($sp)
+		lw $s1, 4($sp)
+		lw $s2, 8($sp)
+		addi $sp, $sp, 12
 		
 		addi $v0, $0, 0
 		addi $v1, $0, 0
