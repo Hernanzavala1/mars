@@ -19,15 +19,15 @@ length2Char_CSisFun: .asciiz "Computer Science is fun."
 
 # strcmp
 strcmp_header: .asciiz "\n\n********* strcmp *********\n"
-strcmp_str1: .asciiz "MIPS!!"
-strcmp_str2: .asciiz "MIPS - Millions.of.Instruction.Per...Second"
+strcmp_str1: .asciiz "Hi Cse220!"
+strcmp_str2: .asciiz "Hi Cse220!"
 
 # toMorse
 toMorse_header: .asciiz "\n\n********* toMorse *********\n"
-toMorse_plaintext: .asciiz "ABCdE"
+toMorse_plaintext: .asciiz "ABC"
 toMorse_mcmsg: .asciiz "@@@@@@@@@@@@@@@@@@@@@@@@@"
 .align 2
-toMorse_size: .word -10
+toMorse_size: .word 4
 
 # createKey
 createKey_header: .asciiz "\n\n********* createKey *********\n"
@@ -159,13 +159,13 @@ main:
 	print_string(strcmp_str2)
 	print_newline
 	print_string(str_input)
-	li $t1, 4
+	li $t1, 6
 	print_int($t1)
 	print_newline
 
 	la $a0, strcmp_str1
 	la $a1, strcmp_str2
-	li $a2, 6
+	li $a2,6
 	jal strcmp
 
 	move $t0, $v0

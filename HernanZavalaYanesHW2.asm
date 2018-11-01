@@ -64,6 +64,8 @@ jumpToRegisterS6:
  			
 			jr $s6
 jumpToRegister:
+ 	
+	
 	jr $ra
 	
 
@@ -153,6 +155,7 @@ strcmp:
 	move $s2, $a2 #gets the lenght argument passed to function
 	
 	#test if lenght arguement is valid
+	
 	bltz  $s2, returnZero
 	beqz  $s2, GoThroughString
 	bgt $s2, $s0, returnZero
@@ -176,14 +179,17 @@ strcmp:
   	 	
   	 	GoThroughString:
   	 	
-  	 	addi $t1, $t1, 0 #counter for same characters in both strings
+  	 	addi $t1, $zero, 0 #counter for same characters in both strings
   	 	
   	 	InsideLoop: 
+  	 	#load the two characters from both strings
   	 	lb $t2, 0($a0)
   	 	lb $t3, 0($a1)
   	 	
+  	 	#increment the address 
   	 	addi $a0, $a0, 1
   	 	addi $a1, $a1, 1
+  	 	
   	 	beq $t2, $0, doneSTRCMP
   	 	beq $t3, $0, doneSTRCMP
   	 	bne $t3, $t2, InsideLoop
@@ -271,7 +277,7 @@ toMorse:
 	la $s3, ($a2)   # this will be the limit for the amount of space allocated 
 	move $t0, $0		# t0 will be the counter which will be used to check if there is still space left
 	 
-	#saveSRegisterToStack
+	
 
 
 	
@@ -336,11 +342,7 @@ toMorse:
 			clearAllTRegister
  			clearAllSRegister
  			
-			#addi $sp, $sp, 12
-			#lw $s0, 0($sp)
-			#lw $s2, 4($sp)
-			#lw $s3, 8($sp)
-			
+		
 		lw $s0, 0($sp)
 		lw $s1, 4($sp)
 		lw $s2, 8($sp)
@@ -362,10 +364,7 @@ toMorse:
 			clearAllTRegister
  			clearAllSRegister
  			
-			#addi $sp, $sp, 12
-			#lw $s0, 0($sp)
-			#lw $s2, 4($sp)
-			#lw $s3, 8($sp)		
+					
 					lw $s0, 0($sp)
 					lw $s1, 4($sp)
 					lw $s2, 8($sp)
@@ -385,11 +384,7 @@ toMorse:
 			clearAllTRegister
  			clearAllSRegister
  			
-			
-			#addi $sp, $sp, 12
-			#lw $s0, 0($sp)
-			#lw $s2, 4($sp)
-			#lw $s3, 8($sp)
+		
 				lw $s0, 0($sp)
 		lw $s1, 4($sp)
 		lw $s2, 8($sp)
@@ -420,8 +415,6 @@ toMorse:
 createKey:
 #Define your code here
  
- 
-      
 	la $s6, ($ra)		#save main return address for next 
 	
 	add $s0, $a0, $0	#save input address before making it uppercase
@@ -468,8 +461,6 @@ createKey:
 			seq $s2, $s1, $s0
 			beq $s2, 0, checkIfExist
 			j jumpToRegister
-
-
 
 keyIndex:
 		#Define your code here
